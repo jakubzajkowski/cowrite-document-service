@@ -36,8 +36,11 @@ jobs:
       - name: Check Prettier formatting
         run: npm run format:check
 
-      - name: Run Tests
+      - name: Run Unit Tests
         run: npm run test
+
+      - name: Run E2E Tests
+        run: npm run test:e2e
 
   docker:
     name: Build and Push Docker Image
