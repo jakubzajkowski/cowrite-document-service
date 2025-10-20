@@ -1,11 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
 import { S3Service } from './s3.service';
+import { S3Client, ListBucketsCommand } from '@aws-sdk/client-s3';
+import { mockClient } from 'aws-sdk-client-mock';
 
 describe('S3Service', () => {
   let service: S3Service;
+  const s3Mock = mockClient(S3Client);
 
   beforeEach(async () => {
+    s3Mock.reset();
+    s3Mock.on(ListBucketsCommand).resolves({ Buckets: [] });
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         S3Service,
@@ -41,5 +47,11 @@ describe('S3Service', () => {
   it('should return bucket name', () => {
     const bucketName = service.getBucketName();
     expect(bucketName).toBe('test-bucket');
+  });
+
+  it('should call S3 ListBucketsCommand', async () => {
+    const client = service.getClient();
+    await client.send(new ListBucketsCommand({}));
+    expect(s3Mock.calls()).toHaveLength(1);
   });
 });

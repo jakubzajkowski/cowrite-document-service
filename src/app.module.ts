@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { S3Module } from './s3/s3.module';
 import { NoteModule } from './note/note.module';
 import { Note } from './note/note.entity';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { Note } from './note/note.entity';
         AWS_S3_BUCKET: Joi.string().required(),
         AWS_ACCESS_KEY_ID: Joi.string().required(),
         AWS_SECRET_ACCESS_KEY: Joi.string().required(),
+        AUTH_SERVICE_URL: Joi.string().uri().required(),
       }),
     }),
 
@@ -41,6 +43,7 @@ import { Note } from './note/note.entity';
     DocumentsModule,
     S3Module,
     NoteModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],
