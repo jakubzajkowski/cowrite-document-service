@@ -4,6 +4,8 @@ import * as Joi from 'joi';
 import { DocumentsModule } from './documents/documents.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { S3Module } from './s3/s3.module';
+import { NoteModule } from './note/note.module';
+import { Note } from './note/note.entity';
 
 @Module({
   imports: [
@@ -31,12 +33,14 @@ import { S3Module } from './s3/s3.module';
         username: config.get<string>('DB_USERNAME'),
         password: config.get<string>('DB_PASSWORD'),
         database: config.get<string>('DB_DATABASE'),
-        synchronize: true,
+        entities: [Note],
+        synchronize: false,
       }),
     }),
 
     DocumentsModule,
     S3Module,
+    NoteModule,
   ],
   controllers: [],
   providers: [],
