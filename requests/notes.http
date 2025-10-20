@@ -1,0 +1,19 @@
+### Create a new note
+POST http://localhost:3000/notes
+Content-Type: application/json
+Cookie: COWRITE_SESSION_ID=
+
+{
+    "name": "test154",
+    "content": "This is a test note content."
+}
+
+### Download note content
+GET http://localhost:3000/notes/21
+Content-Type: application/json
+Cookie: COWRITE_SESSION_ID=
+
+### List all notes
+GET http://localhost:3000/notes
+Content-Type: application/json
+Cookie: COWRITE_SESSION_ID=

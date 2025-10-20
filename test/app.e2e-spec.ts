@@ -11,7 +11,6 @@ import {
 } from '@testcontainers/localstack';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
-import { DocumentsModule } from './../src/documents/documents.module';
 import { S3Module } from './../src/s3/s3.module';
 
 describe('AppController (e2e)', () => {
@@ -54,7 +53,6 @@ describe('AppController (e2e)', () => {
           autoLoadEntities: true,
           synchronize: true,
         }),
-        DocumentsModule,
         S3Module,
       ],
     }).compile();
@@ -80,9 +78,5 @@ describe('AppController (e2e)', () => {
     expect(localstackContainer).toBeDefined();
     expect(app).toBeDefined();
   });
-
-  it('should be able to query documents endpoint', async () => {
-    const response = await request(app.getHttpServer()).get('/documents');
-    expect(response.status).toBe(200);
-  });
+  
 });

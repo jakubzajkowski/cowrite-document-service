@@ -12,7 +12,7 @@ export class AuthService {
     private readonly configService: ConfigService,
   ) {}
 
-  async isUserAuthorized(sessionId: string): Promise<boolean> {
+  async checkUserAuthorization(sessionId: string): Promise<UserDto | null> {
     const cookie = `COWRITE_SESSION_ID=${sessionId}`;
 
     try {
@@ -26,14 +26,14 @@ export class AuthService {
         ),
       );
 
-      return response.data && response.status === 200;
+      return response.data;
     } catch (err: unknown) {
       const error = err as AxiosError;
       console.error(
         'AuthService request failed:',
         error.response?.data || error.message,
       );
-      return false;
+      return null;
     }
   }
 }

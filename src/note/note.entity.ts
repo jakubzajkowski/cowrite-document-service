@@ -12,10 +12,10 @@ export class Note {
   id: number;
 
   @Column()
-  userId: string;
+  userId: number;
 
   @Column()
-  title: string;
+  name: string;
 
   @Column()
   s3Key: string;

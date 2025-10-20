@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as Joi from 'joi';
-import { DocumentsModule } from './documents/documents.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { S3Module } from './s3/s3.module';
 import { NoteModule } from './note/note.module';
@@ -40,7 +39,6 @@ import { AuthModule } from './auth/auth.module';
       }),
     }),
 
-    DocumentsModule,
     S3Module,
     NoteModule,
     AuthModule,
