@@ -20,5 +20,6 @@ COPY --from=builder /app/node_modules ./node_modules
 
 EXPOSE 3000
 
-CMD ["sh", "-c", "typeorm migration:run -d ./dist/data-source.js && node dist/main.js"]
+CMD ["sh", "-c", "npx typeorm-ts-node-commonjs migration:run -d ./dist/data-source.js && node dist/main.js"]
+
 
