@@ -22,6 +22,8 @@ import { AuthModule } from './auth/auth.module';
         AWS_ACCESS_KEY_ID: Joi.string().required(),
         AWS_SECRET_ACCESS_KEY: Joi.string().required(),
         AUTH_SERVICE_URL: Joi.string().uri().required(),
+        JWT_SECRET: Joi.string().required(),
+        JWT_COOKIE_NAME: Joi.string().required(),
       }),
     }),
 

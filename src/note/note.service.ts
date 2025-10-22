@@ -2,13 +2,11 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Note } from './note.entity';
 import { S3Service } from '../s3/s3.service';
-import { AuthService } from '../auth/auth.service';
 import { CreateNoteResponseDto, GetNoteContentResponseDto } from './note.dto';
 
 @Injectable()
@@ -17,25 +15,18 @@ export class NoteService {
     @InjectRepository(Note)
     private noteRepo: Repository<Note>,
     private readonly s3Service: S3Service,
-    private readonly authService: AuthService,
   ) {}
   async createNote(
-    sessionId: string,
+    userId: number,
     content: string,
     name: string,
   ): Promise<CreateNoteResponseDto> {
-    const user = await this.authService.checkUserAuthorization(sessionId);
-
-    if (!user) {
-      throw new UnauthorizedException('Unauthorized');
-    }
-
-    const s3Key = `users/${user.id}/notes/${name}.md`;
+    const s3Key = `users/${userId}/notes/${name}.md`;
 
     const note = this.noteRepo.create({
       name: name,
       s3Key,
-      userId: user.id,
+      userId: userId,
       size: Buffer.byteLength(content, 'utf-8'),
       tags: '',
     });
@@ -56,23 +47,30 @@ export class NoteService {
     };
   }
   async getNoteContent(
-    sessionId: string,
+    userId: number,
     noteId: number,
   ): Promise<GetNoteContentResponseDto> {
-    const user = await this.authService.checkUserAuthorization(sessionId);
-    if (!user) throw new UnauthorizedException('Unauthorized');
-
-    const note = await this.noteRepo.findOneBy({ id: noteId, userId: user.id });
+    const note = await this.noteRepo.findOneBy({ id: noteId, userId: userId });
     if (!note) throw new NotFoundException('Not found');
 
     const content = await this.s3Service.getObjectContent(note.s3Key);
     return { content };
   }
 
-  async getAllNotes(sessionId: string): Promise<Note[]> {
-    const user = await this.authService.checkUserAuthorization(sessionId);
-    if (!user) throw new UnauthorizedException('Unauthorized');
+  async getAllNotes(userId: number): Promise<Note[]> {
+    return this.noteRepo.findBy({ userId: userId });
+  }
+  async updateNote(
+    userId: number,
+    noteId: number,
+    content: string,
+  ): Promise<void> {
+    const note = await this.noteRepo.findOneBy({ id: noteId, userId: userId });
+    if (!note) throw new NotFoundException('Not found');
 
-    return this.noteRepo.findBy({ userId: user.id });
+    this.noteRepo.merge(note, { size: Buffer.byteLength(content, 'utf-8') });
+    await this.noteRepo.save(note);
+
+    await this.s3Service.putObject(note.s3Key, content);
   }
 }

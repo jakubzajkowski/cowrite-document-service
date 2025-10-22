@@ -3,7 +3,6 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { NoteService } from './note.service';
 import { Note } from './note.entity';
 import { S3Service } from '../s3/s3.service';
-import { AuthService } from '../auth/auth.service';
 
 describe('NoteService', () => {
   let service: NoteService;
@@ -23,17 +22,12 @@ describe('NoteService', () => {
     getObjectContent: jest.fn(),
   };
 
-  const mockAuthService = {
-    checkUserAuthorization: jest.fn(),
-  };
-
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         NoteService,
         { provide: getRepositoryToken(Note), useValue: mockRepository },
         { provide: S3Service, useValue: mockS3Service },
-        { provide: AuthService, useValue: mockAuthService },
       ],
     }).compile();
 

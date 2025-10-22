@@ -5,11 +5,14 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  Patch,
   Post,
-  Req,
+  UseGuards,
 } from '@nestjs/common';
 import { NoteService } from './note.service';
-import type { Request } from 'express';
+import { JwtAuthGuard } from '../auth/auth.guard';
+import { CurrentUser } from '../auth/current-user.decorator';
+import type { UserDto } from '../auth/user.dto';
 
 interface CreateNoteDto {
   content: string;
@@ -17,15 +20,15 @@ interface CreateNoteDto {
 }
 
 @Controller('notes')
+@UseGuards(JwtAuthGuard)
 export class NoteController {
   constructor(private readonly noteService: NoteService) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  async createNote(@Req() req: Request, @Body() dto: CreateNoteDto) {
-    const sessionId = req.cookies['COWRITE_SESSION_ID'] as string;
+  async createNote(@CurrentUser() user: UserDto, @Body() dto: CreateNoteDto) {
     const note = await this.noteService.createNote(
-      sessionId,
+      user.id,
       dto.content,
       dto.name,
     );
@@ -33,14 +36,24 @@ export class NoteController {
   }
   @Get(':id')
   @HttpCode(HttpStatus.OK)
-  async getNoteContent(@Req() req: Request, @Param('id') noteId: number) {
-    const sessionId = req.cookies['COWRITE_SESSION_ID'] as string;
-    return this.noteService.getNoteContent(sessionId, noteId);
+  async getNoteContent(
+    @CurrentUser() user: UserDto,
+    @Param('id') noteId: number,
+  ) {
+    return this.noteService.getNoteContent(user.id, noteId);
   }
   @Get()
   @HttpCode(HttpStatus.OK)
-  async getAllNotes(@Req() req: Request) {
-    const sessionId = req.cookies['COWRITE_SESSION_ID'] as string;
-    return this.noteService.getAllNotes(sessionId);
+  async getAllNotes(@CurrentUser() user: UserDto) {
+    return this.noteService.getAllNotes(user.id);
+  }
+  @Patch(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async updateNote(
+    @CurrentUser() user: UserDto,
+    @Param('id') noteId: number,
+    @Body('content') content: string,
+  ) {
+    await this.noteService.updateNote(user.id, noteId, content);
   }
 }

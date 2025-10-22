@@ -65,6 +65,10 @@ AWS_ACCESS_KEY_ID=test
 AWS_SECRET_ACCESS_KEY=test
 AWS_S3_BUCKET=my-notes-bucket
 
+# Jwt
+JWT_SECRET=secret
+JWT_COOKIE_NAME=COWRITE_SESSION_ID
+
 # Auth Service
 AUTH_SERVICE_URL=http://localhost:8080
 

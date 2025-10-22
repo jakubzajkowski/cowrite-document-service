@@ -120,7 +120,7 @@ export class S3Service {
     if (response.Body instanceof Readable) {
       const chunks: Buffer[] = [];
       for await (const chunk of response.Body) {
-        chunks.push(chunk);
+        chunks.push(Buffer.from(chunk as Uint8Array));
       }
       return Buffer.concat(chunks).toString('utf-8');
     }
