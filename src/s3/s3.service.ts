@@ -1,5 +1,6 @@
 import {
   CreateBucketCommand,
+  DeleteObjectCommand,
   GetObjectCommand,
   HeadObjectCommand,
   PutObjectCommand,
@@ -126,5 +127,18 @@ export class S3Service {
     }
 
     return '';
+  }
+  async deleteObject(key: string): Promise<void> {
+    try {
+      const command = new DeleteObjectCommand({
+        Bucket: this.bucket,
+        Key: key,
+      });
+      await this.s3.send(command);
+      this.logger.log(`✅ Deleted object ${key}`);
+    } catch (error) {
+      this.logger.error(`❌ Failed to delete object ${key}: ${error}`);
+      throw error;
+    }
   }
 }

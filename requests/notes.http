@@ -11,18 +11,23 @@ Cookie:
 ### Download note content
 GET http://localhost:3000/notes/29
 Content-Type: application/json
-Cookie: 
+Cookie: COWRITE_SESSION_ID=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ7XCJpZFwiOjQsXCJlbWFpbFwiOlwidGVzdHVzZXIxdzJcIixcInVzZXJuYW1lXCI6XCJ0ZXN0MXcyQGV4YW1wbGUuY29tXCJ9IiwiaWF0IjoxNzYxMjA4MTU4LCJleHAiOjE3NjEyMTE3NTh9.55tfUrP-9XhdiJSWn06u7uWxCwsUi0DLZnKgeWlZO5s; Max-Age=3600; Expires=Thu, 23 Oct 2025 09:29:18 GMT; Path=/; HttpOnly
 
 ### List all notes
 GET http://localhost:3000/notes
 Content-Type: application/json
-Cookie: 
+Cookie: COWRITE_SESSION_ID=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ7XCJpZFwiOjQsXCJlbWFpbFwiOlwidGVzdHVzZXIxdzJcIixcInVzZXJuYW1lXCI6XCJ0ZXN0MXcyQGV4YW1wbGUuY29tXCJ9IiwiaWF0IjoxNzYxMjA4MTU4LCJleHAiOjE3NjEyMTE3NTh9.55tfUrP-9XhdiJSWn06u7uWxCwsUi0DLZnKgeWlZO5s; Max-Age=3600; Expires=Thu, 23 Oct 2025 09:29:18 GMT; Path=/; HttpOnly
 
 ### Update note content
 PATCH http://localhost:3000/notes/29
 Content-Type: application/json
-Cookie: 
+Cookie: COWRITE_SESSION_ID=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ7XCJpZFwiOjQsXCJlbWFpbFwiOlwidGVzdHVzZXIxdzJcIixcInVzZXJuYW1lXCI6XCJ0ZXN0MXcyQGV4YW1wbGUuY29tXCJ9IiwiaWF0IjoxNzYxMjA4MTU4LCJleHAiOjE3NjEyMTE3NTh9.55tfUrP-9XhdiJSWn06u7uWxCwsUi0DLZnKgeWlZO5s; Max-Age=3600; Expires=Thu, 23 Oct 2025 09:29:18 GMT; Path=/; HttpOnly
 
 {
     "content": "This is a test note content 1231231 312 3213123 13."
 }
+
+### Delete a note
+DELETE http://localhost:3000/notes/30
+Content-Type: application/json
+Cookie: COWRITE_SESSION_ID=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ7XCJpZFwiOjQsXCJlbWFpbFwiOlwidGVzdHVzZXIxdzJcIixcInVzZXJuYW1lXCI6XCJ0ZXN0MXcyQGV4YW1wbGUuY29tXCJ9IiwiaWF0IjoxNzYxMjA4MTU4LCJleHAiOjE3NjEyMTE3NTh9.55tfUrP-9XhdiJSWn06u7uWxCwsUi0DLZnKgeWlZO5s; Max-Age=3600; Expires=Thu, 23 Oct 2025 09:29:18 GMT; Path=/; HttpOnly

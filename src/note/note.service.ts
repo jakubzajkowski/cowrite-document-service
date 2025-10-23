@@ -23,6 +23,12 @@ export class NoteService {
   ): Promise<CreateNoteResponseDto> {
     const s3Key = `users/${userId}/notes/${name}.md`;
 
+    const existingNote = await this.s3Service.headObject(s3Key);
+
+    if (existingNote) {
+      throw new BadRequestException('Note with the same name already exists');
+    }
+
     const note = this.noteRepo.create({
       name: name,
       s3Key,
@@ -32,12 +38,6 @@ export class NoteService {
     });
 
     await this.noteRepo.save(note);
-
-    const existingNote = await this.s3Service.headObject(s3Key);
-
-    if (existingNote) {
-      throw new BadRequestException('Note with the same name already exists');
-    }
 
     await this.s3Service.putObject(s3Key, content);
 
@@ -72,5 +72,12 @@ export class NoteService {
     await this.noteRepo.save(note);
 
     await this.s3Service.putObject(note.s3Key, content);
+  }
+  async deleteNote(userId: number, noteId: number): Promise<void> {
+    const note = await this.noteRepo.findOneBy({ id: noteId, userId: userId });
+    if (!note) throw new NotFoundException('Not found');
+
+    await this.noteRepo.delete({ id: noteId, userId: userId });
+    await this.s3Service.deleteObject(note.s3Key);
   }
 }

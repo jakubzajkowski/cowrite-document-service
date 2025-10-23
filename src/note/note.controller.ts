@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -55,5 +56,10 @@ export class NoteController {
     @Body('content') content: string,
   ) {
     await this.noteService.updateNote(user.id, noteId, content);
+  }
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteNote(@CurrentUser() user: UserDto, @Param('id') noteId: number) {
+    await this.noteService.deleteNote(user.id, noteId);
   }
 }
