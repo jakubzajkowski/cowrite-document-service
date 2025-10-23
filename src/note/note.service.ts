@@ -11,16 +11,37 @@ import { CreateNoteResponseDto, GetNoteContentResponseDto } from './note.dto';
 
 @Injectable()
 export class NoteService {
+  private readonly USER_STORAGE_LIMIT = 5 * 1024 * 1024 * 1024;
+
   constructor(
     @InjectRepository(Note)
     private noteRepo: Repository<Note>,
     private readonly s3Service: S3Service,
   ) {}
+
+  private async getUserStorageUsage(userId: number): Promise<number> {
+    const raw: { sum: string | null } | undefined = await this.noteRepo
+      .createQueryBuilder('note')
+      .select('SUM(note.size)', 'sum')
+      .where('note.userId = :userId', { userId })
+      .getRawOne();
+
+    const sum = raw?.sum ? Number(raw.sum) : 0;
+    return sum;
+  }
+
   async createNote(
     userId: number,
     content: string,
     name: string,
   ): Promise<CreateNoteResponseDto> {
+    const size = Buffer.byteLength(content, 'utf-8');
+    const currentUsage = await this.getUserStorageUsage(userId);
+
+    if (currentUsage + size > this.USER_STORAGE_LIMIT) {
+      throw new BadRequestException('Storage limit of 5GB exceeded');
+    }
+
     const s3Key = `users/${userId}/notes/${name}.md`;
 
     const existingNote = await this.s3Service.headObject(s3Key);
@@ -33,7 +54,7 @@ export class NoteService {
       name: name,
       s3Key,
       userId: userId,
-      size: Buffer.byteLength(content, 'utf-8'),
+      size,
       tags: '',
     });
 

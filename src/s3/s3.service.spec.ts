@@ -1,8 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
 import { S3Service } from './s3.service';
-import { S3Client, ListBucketsCommand } from '@aws-sdk/client-s3';
+import { SdkStream } from '@aws-sdk/types';
+import {
+  S3Client,
+  HeadObjectCommand,
+  PutObjectCommand,
+  GetObjectCommand,
+  DeleteObjectCommand,
+} from '@aws-sdk/client-s3';
 import { mockClient } from 'aws-sdk-client-mock';
+import { Readable } from 'stream';
 
 describe('S3Service', () => {
   let service: S3Service;
@@ -10,7 +18,6 @@ describe('S3Service', () => {
 
   beforeEach(async () => {
     s3Mock.reset();
-    s3Mock.on(ListBucketsCommand).resolves({ Buckets: [] });
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -18,7 +25,7 @@ describe('S3Service', () => {
         {
           provide: ConfigService,
           useValue: {
-            get: jest.fn((key: string): string | undefined => {
+            get: jest.fn((key: string) => {
               const config: Record<string, string> = {
                 AWS_S3_BUCKET: 'test-bucket',
                 AWS_REGION: 'us-east-1',
@@ -40,18 +47,73 @@ describe('S3Service', () => {
   });
 
   it('should return S3 client', () => {
-    const client = service.getClient();
-    expect(client).toBeDefined();
+    expect(service.getClient()).toBeDefined();
   });
 
   it('should return bucket name', () => {
-    const bucketName = service.getBucketName();
-    expect(bucketName).toBe('test-bucket');
+    expect(service.getBucketName()).toBe('test-bucket');
   });
 
-  it('should call S3 ListBucketsCommand', async () => {
-    const client = service.getClient();
-    await client.send(new ListBucketsCommand({}));
-    expect(s3Mock.calls()).toHaveLength(1);
+  describe('headObject', () => {
+    it('should return object metadata if exists', async () => {
+      s3Mock.on(HeadObjectCommand).resolves({ ContentLength: 123 });
+      const result = await service.headObject('test-key');
+      expect(result).toEqual({ ContentLength: 123 });
+    });
+
+    it('should return undefined if object does not exist', async () => {
+      s3Mock.on(HeadObjectCommand).rejects(new Error('Not Found'));
+      const result = await service.headObject('missing-key');
+      expect(result).toBeUndefined();
+    });
+  });
+
+  describe('putObject', () => {
+    it('should upload object successfully', async () => {
+      s3Mock.on(PutObjectCommand).resolves({ ETag: 'etag123' });
+      const result = await service.putObject('test-key', 'content');
+      expect(result).toEqual({ ETag: 'etag123' });
+    });
+
+    it('should throw on upload error', async () => {
+      s3Mock.on(PutObjectCommand).rejects(new Error('Upload failed'));
+      await expect(service.putObject('key', 'content')).rejects.toThrow(
+        'Upload failed',
+      );
+    });
+  });
+
+  describe('getObjectContent', () => {
+    it('should return string content from Readable stream', async () => {
+      const mockStream: SdkStream<Readable> = Readable.from([
+        'Hello',
+        ' ',
+        'World',
+      ]) as SdkStream<Readable>;
+      s3Mock.on(GetObjectCommand).resolves({ Body: mockStream });
+
+      const content = await service.getObjectContent('test-key');
+      expect(content).toBe('Hello World');
+    });
+
+    it('should return empty string if Body is undefined', async () => {
+      s3Mock.on(GetObjectCommand).resolves({ Body: undefined });
+      const content = await service.getObjectContent('test-key');
+      expect(content).toBe('');
+    });
+  });
+
+  describe('deleteObject', () => {
+    it('should delete object successfully', async () => {
+      s3Mock.on(DeleteObjectCommand).resolves({});
+      await expect(service.deleteObject('test-key')).resolves.toBeUndefined();
+    });
+
+    it('should throw on delete error', async () => {
+      s3Mock.on(DeleteObjectCommand).rejects(new Error('Delete failed'));
+      await expect(service.deleteObject('key')).rejects.toThrow(
+        'Delete failed',
+      );
+    });
   });
 });
