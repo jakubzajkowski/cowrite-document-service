@@ -6,6 +6,7 @@ import { S3Module } from './s3/s3.module';
 import { NoteModule } from './note/note.module';
 import { Note } from './note/note.entity';
 import { AuthModule } from './auth/auth.module';
+import { SqsModule } from './sqs/sqs.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { AuthModule } from './auth/auth.module';
         AUTH_SERVICE_URL: Joi.string().uri().required(),
         JWT_SECRET: Joi.string().required(),
         JWT_COOKIE_NAME: Joi.string().required(),
+        AWS_SQS_WORKSPACE_QUEUE_URL: Joi.string().uri().required(),
       }),
     }),
 
@@ -44,6 +46,7 @@ import { AuthModule } from './auth/auth.module';
     S3Module,
     NoteModule,
     AuthModule,
+    SqsModule,
   ],
   controllers: [],
   providers: [],
