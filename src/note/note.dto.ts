@@ -6,3 +6,9 @@ export interface CreateNoteResponseDto {
 export interface GetNoteContentResponseDto {
   content: string;
 }
+
+export interface SqsMessageDto {
+  workspaceId: number;
+  fileId: number;
+  s3Key: string;
+}

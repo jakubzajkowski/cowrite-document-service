@@ -4,6 +4,7 @@ import { NoteService } from './note.service';
 import { Note } from './note.entity';
 import { S3Service } from '../s3/s3.service';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { SqsService } from '../sqs/sqs.service';
 
 describe('NoteService', () => {
   let service: NoteService;
@@ -31,12 +32,17 @@ describe('NoteService', () => {
     deleteObject: jest.fn(),
   };
 
+  const mockSqsService = {
+    sendMessage: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         NoteService,
         { provide: getRepositoryToken(Note), useValue: mockRepository },
         { provide: S3Service, useValue: mockS3Service },
+        { provide: SqsService, useValue: mockSqsService },
       ],
     }).compile();
 

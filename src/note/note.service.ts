@@ -8,6 +8,7 @@ import { Repository } from 'typeorm';
 import { Note } from './note.entity';
 import { S3Service } from '../s3/s3.service';
 import { CreateNoteResponseDto, GetNoteContentResponseDto } from './note.dto';
+import { SqsService } from '../sqs/sqs.service';
 
 @Injectable()
 export class NoteService {
@@ -17,6 +18,7 @@ export class NoteService {
     @InjectRepository(Note)
     private noteRepo: Repository<Note>,
     private readonly s3Service: S3Service,
+    private readonly sqsService: SqsService,
   ) {}
 
   private async getUserStorageUsage(userId: number): Promise<number> {
@@ -61,6 +63,12 @@ export class NoteService {
     await this.noteRepo.save(note);
 
     await this.s3Service.putObject(s3Key, content);
+
+    await this.sqsService.sendMessage({
+      workspaceId: userId,
+      fileId: note.id,
+      s3Key: s3Key,
+    });
 
     return {
       message: 'Note created successfully',

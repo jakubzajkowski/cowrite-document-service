@@ -57,7 +57,7 @@ describe('SqsService', () => {
   it('should send message to SQS', async () => {
     mockSend.mockResolvedValueOnce({});
 
-    const body = { workspaceId: 'abc', fileId: 'file123' };
+    const body = { workspaceId: 1, fileId: 112, s3Key: 's3/key/path' };
     await service.sendMessage(body);
 
     expect(mockSend).toHaveBeenCalledTimes(1);

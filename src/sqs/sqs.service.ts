@@ -6,6 +6,7 @@ import {
 } from '@aws-sdk/client-sqs';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { SqsMessageDto } from 'src/note/note.dto';
 
 @Injectable()
 export class SqsService {
@@ -28,7 +29,7 @@ export class SqsService {
       this.configService.get<string>('AWS_SQS_WORKSPACE_QUEUE_URL') || '';
   }
 
-  async sendMessage(body: any) {
+  async sendMessage(body: SqsMessageDto) {
     const command = new SendMessageCommand({
       QueueUrl: this.queueUrl,
       MessageBody: JSON.stringify(body),
