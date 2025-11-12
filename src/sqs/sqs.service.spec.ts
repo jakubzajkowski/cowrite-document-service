@@ -7,6 +7,7 @@ import {
   ReceiveMessageCommand,
   DeleteMessageCommand,
 } from '@aws-sdk/client-sqs';
+import { SqsMessageDto } from 'src/note/note.dto';
 
 jest.mock('@aws-sdk/client-sqs');
 
@@ -57,7 +58,12 @@ describe('SqsService', () => {
   it('should send message to SQS', async () => {
     mockSend.mockResolvedValueOnce({});
 
-    const body = { workspaceId: 1, fileId: 112, s3Key: 's3/key/path' };
+    const body: SqsMessageDto = {
+      workspaceId: 1,
+      fileId: 112,
+      s3Key: 's3/key/path',
+      eventType: 'create',
+    };
     await service.sendMessage(body);
 
     expect(mockSend).toHaveBeenCalledTimes(1);

@@ -11,4 +11,5 @@ export interface SqsMessageDto {
   workspaceId: number;
   fileId: number;
   s3Key: string;
+  eventType: 'create' | 'update' | 'delete';
 }

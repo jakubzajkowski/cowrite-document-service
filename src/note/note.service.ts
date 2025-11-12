@@ -68,6 +68,7 @@ export class NoteService {
       workspaceId: userId,
       fileId: note.id,
       s3Key: s3Key,
+      eventType: 'create',
     });
 
     return {
@@ -94,11 +95,18 @@ export class NoteService {
     noteId: number,
     content: string,
   ): Promise<void> {
-    const note = await this.noteRepo.findOneBy({ id: noteId, userId: userId });
+    const note = await this.noteRepo.findOneBy({ id: noteId, userId });
     if (!note) throw new NotFoundException('Not found');
 
     this.noteRepo.merge(note, { size: Buffer.byteLength(content, 'utf-8') });
     await this.noteRepo.save(note);
+
+    await this.sqsService.sendMessage({
+      workspaceId: userId,
+      fileId: note.id,
+      s3Key: note.s3Key,
+      eventType: 'update',
+    });
 
     await this.s3Service.putObject(note.s3Key, content);
   }
@@ -107,6 +115,14 @@ export class NoteService {
     if (!note) throw new NotFoundException('Not found');
 
     await this.noteRepo.delete({ id: noteId, userId: userId });
+
+    await this.sqsService.sendMessage({
+      workspaceId: userId,
+      fileId: note.id,
+      s3Key: note.s3Key,
+      eventType: 'delete',
+    });
+
     await this.s3Service.deleteObject(note.s3Key);
   }
 }

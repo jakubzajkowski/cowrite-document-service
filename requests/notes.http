@@ -1,11 +1,11 @@
 ### Create a new note
 POST http://localhost:3000/notes
 Content-Type: application/json
-Cookie: COWRITE_SESSION_ID=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ7XCJpZFwiOjQsXCJlbWFpbFwiOlwidGVzdHVzZXIxdzJcIixcInVzZXJuYW1lXCI6XCJ0ZXN0MXcyQGV4YW1wbGUuY29tXCJ9IiwiaWF0IjoxNzYyODU2NzgxLCJleHAiOjE3NjI4OTI3ODF9.jg8H_6XnF5E1brrEyqa50yg0HB1dbByk21BVNmv1cwk; Max-Age=36000; Expires=Tue, 11 Nov 2025 20:26:21 GMT; Path=/; HttpOnly
+Cookie: COWRITE_SESSION_ID=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ7XCJpZFwiOjQsXCJlbWFpbFwiOlwidGVzdHVzZXIxdzJcIixcInVzZXJuYW1lXCI6XCJ0ZXN0MXcyQGV4YW1wbGUuY29tXCJ9IiwiaWF0IjoxNzYyOTQyNjMwLCJleHAiOjE3NjI5Nzg2MzB9.JzczM2R__a46LXT80tleTXEgPDgkqR_hHTtF0uRu6RA; Max-Age=36000; Expires=Wed, 12 Nov 2025 20:17:10 GMT; Path=/; HttpOnly
 
 {
-    "name": "xd1223",
-    "content": "This is a test note content."
+    "name": "polska_chrzest_966",
+    "content": "Chrzest Polski miał miejsce w 966 roku i jest uznawany za jedno z najważniejszych wydarzeń w historii naszego kraju. Książę Mieszko I, władca Polan, przyjął chrzest prawdopodobnie z rąk czeskich duchownych, co oznaczało początek chrystianizacji ziem polskich. Wydarzenie to włączyło Polskę w krąg kultury zachodnioeuropejskiej, umocniło pozycję Mieszka I na arenie międzynarodowej i przyczyniło się do powstania zorganizowanego państwa. Chrzest Polski miał więc nie tylko znaczenie religijne, ale także polityczne i kulturowe."
 }
 
 ### Download note content
